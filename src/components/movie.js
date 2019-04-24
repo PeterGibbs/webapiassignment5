@@ -1,5 +1,5 @@
 import React, {Component } from 'react';
-
+import axios from "axios/index";
 class Movie extends Component {
     constructor(props){
         super(props)
