@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import MovieHeader from './components/movieheader';
-import MovieList from './components/movielist';
+import MovieList from './components/movielist1';
 import Movie from './components/movie';
 import Authentication from './components/authentication';
 import {HashRouter,Route} from 'react-router-dom';
