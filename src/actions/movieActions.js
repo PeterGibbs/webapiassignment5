@@ -31,7 +31,7 @@ export function setMovie(movie) {
 export function fetchMovies(){
     const env = runtimeEnv();
     return dispatch => {
-        return fetch(`${env.REACT_APP_API_URL}/movies?reviews=1`, {
+        return fetch(`https://webapiassignment4.herokuapp.com/movies?reviews=1`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -55,7 +55,7 @@ export function fetchMovies(){
 export function fetchMovie(movieId){
     const env = runtimeEnv();
     return dispatch => {
-        return fetch(`${env.REACT_APP_API_URL}/movies?id=${movieId}&reviews=1`, {
+        return fetch(`https://webapiassignment4.herokuapp.com/movies?id=${movieId}&reviews=1`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -80,7 +80,7 @@ export function fetchMovie(movieId){
 export function submitReview(data){
     const env = runtimeEnv();
     return dispatch => {
-        return fetch(`${env.REACT_APP_API_URL}/reviews`, {
+        return fetch(`https://webapiassignment4.herokuapp.com/reviews`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
