@@ -36,7 +36,9 @@ class MovieList extends Component {
             if (!movieList) { // evaluates to true if currentMovie is null
                 return <div>Loading...</div>;
             }
-
+            if(!this.props.loggedIn){
+                return <div>Please log in or register first</div>
+            }
             return (
                 <Carousel onSelect={this.handleSelect}>
                     {movieList.map((movie) =>
@@ -62,6 +64,7 @@ class MovieList extends Component {
 
 const mapStateToProps = state => {
     return {
+        loggedIn: state.auth.loggedIn,
         movies: state.movie.movies
     }
 }
