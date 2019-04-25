@@ -1,82 +1,69 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import { fetchMovies } from '../actions/movieActions';
+import { setMovie } from '../actions/movieActions';
+import {connect} from "react-redux";
+import { Image } from 'react-bootstrap'
+import { Carousel } from 'react-bootstrap'
+import { Glyphicon } from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap';
-import axios from "axios/index";
+
+//require a callback function to be sent to MovieList to update the header subtitle
 
 class MovieList extends Component {
-    state={selectedOption: null, movieList: []};
-    constructor(props){
-        console.log("THE MOVIE LIST: IM ALIVE")
-        super(props)
-        if(this.props.onTitleChange){
-            this.props.onTitleChange(null)
+    constructor(props) {
+        super(props);
+        this.handleSelect = this.handleSelect.bind(this);
+    }
 
-        }
+    componentDidMount() {
+        const {dispatch} = this.props;
+        dispatch(fetchMovies());
     }
-    
-    componentWillMount(){
-        console.log("Will mount")
-    }
-    componentWillReceiveProps(newProps){
-        console.log("wil lget props")
-    }
-    shouldComponentUpdate(newProps,newState){
-        return true;
-    }
-    componentDidUpdate(nextProps,nextState){
-        console.log("will update")
-    }
-    
-    componentWillUnmount(){
-        console.log("unmounted")
-    }
-    componentDidMount(){
-        console.log("mounted")
-        
-        this.handleOnLoadMovies();
-    }
-    handleOnLoadMovies=()=>{
-        console.log("load movies")
-        var headers={"Authorization":'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFmYzFkOTZiNDkyOTNmOTk0MDEzZmQwYzUxM2IyZmM5ZWZhMmEyNTgiLCJ1c2VybmFtZSI6IjkxOSIsImlhdCI6MTU1NjA5NTU0N30.b0BJgisVn92ZPXw6-36_pRYMEJHy_jBtV9htjxItSrE',"Content-Type":"application/json"}
-        axios.get('https://webapiassignment4.herokuapp.com/movies',{'headers':headers})
-        .then((response)=>{
-            console.log("movies returned")
-            console.log(response.data.movies)
-            this.setState({
-                movieList: response.data.movies
-                
-            });
-        })
-        .catch((error)=> {
-            console.log("failed to get movies")
-        })
 
+    handleSelect(selectedIndex, e) {
+        const {dispatch} = this.props;
+        dispatch(setMovie(this.props.movies[selectedIndex]));
     }
-    handleOnChange=(e)=>{
-        this.setState({
-            selectedOption: e.target.value
-        });
-        if(this.props.onTitleChange){
-            this.props.onTitleChange(e.target.value)
+
+    handleClick = (movie) => {
+        const {dispatch} = this.props;
+        dispatch(setMovie(movie));
+    }
+
+    render() {
+
+        const MovieListCarousel= ({movieList}) => {
+            if (!movieList) { // evaluates to true if currentMovie is null
+                return <div>Loading...</div>;
+            }
+
+            return (
+                <Carousel onSelect={this.handleSelect}>
+                    {movieList.map((movie) =>
+                    <Carousel.Item key={movie._id}>
+                        <div>
+                            <LinkContainer to={'/movie/'+movie._id} onClick={()=>this.handleClick(movie)}>
+                                <Image className="image" src={movie.ImageUrl} thumbnail />
+                            </LinkContainer>
+                        </div>
+                        <Carousel.Caption>
+                            <h3>{movie.Title}</h3>
+                            <Glyphicon glyph={'star'} /> {movie.AvgRating} &nbsp;&nbsp; {movie.releaseDate}
+                        </Carousel.Caption>
+                    </Carousel.Item>)}
+            </Carousel>);
         }
-    }
-    render(){
+
         return (
-            <div>
-                {this.state.movieList.map((movie,index)=>(
-                    <div key={movie._id} className="row movietitle">
-                    {movie.Title}<input type="radio" value={movie.Title} checked={this.state.selectedOption===movie._id} onChange={(e)=>this.handleOnChange(e)}/>
-                    <label>{movie.title}</label>
-                    </div>
-                ))}
-                <div>
-                    <LinkContainer to="/movie">
-                        <button type="button">Add new movie</button>
-                    </LinkContainer>
-                </div>
-            </div>
-        )
+            <MovieListCarousel movieList={this.props.movies} />
+        );
     }
-
 }
 
-export default MovieList;
+const mapStateToProps = state => {
+    return {
+        movies: state.movie.movies
+    }
+}
+
+export default connect(mapStateToProps)(MovieList);

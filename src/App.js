@@ -1,37 +1,33 @@
-import React, {Component} from 'react'
-
+import React, { Component } from 'react';
 import './App.css';
-import MovieHeader from './components/movieheader'
-import MovieList from './components/MovieList';
+import MovieHeader from './components/movieheader';
+import MovieList from './components/movielist';
 import Movie from './components/movie';
-import {HashRouter,Route} from 'react-router-dom'
+import Authentication from './components/authentication';
+import {HashRouter,Route} from 'react-router-dom';
+import { Provider } from 'react-redux'
+import store from './stores/store'
 
+//add routing configuration
 class App extends Component {
-  state={movieId: null};
-  handleOnTitleChange=(e)=>{
-    this.setState({
-      title: e
-     
-    });
-  }
-  componentDidMount(){
-    
-  }
-  render(){
-    return (
-      <div className="App">
-      <HashRouter>
-        <div>
-          <MovieHeader movieId={this.state.movieId}/>
-          <Route exact path ="/" render={()=><MovieList onTitleChange={this.handleOnTitleChange} />}/>
-          <Route path ="/movieList" render={()=><MovieList onTitleChange={this.handleOnTitleChange} />}/>
-          <Route path ="/movie" render={()=><Movie onTitleChange={this.handleOnTitleChange} />}/>
-        </div>
-      </HashRouter>
-      </div>
-    )
-  }
-  
+    render() {
+        return (
+            <div className="App">
+                <Provider store={store}>
+                <HashRouter>
+                    <div>
+                      
+                        <MovieHeader />
+                        <Route exact path="/" render={()=><MovieList />}/>
+                        <Route path="/movielist" render={()=><MovieList />}/>
+                        <Route path="/movie/:movieId" render={()=><Movie />}/>
+                        <Route path="/signin" render={()=><Authentication />}/>
+                    </div>
+                </HashRouter>
+                </Provider>
+            </div>
+        );
+    }
 }
 
 export default App;

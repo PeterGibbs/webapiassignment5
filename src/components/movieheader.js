@@ -1,73 +1,52 @@
 import React, { Component } from 'react';
-import {Navbar,NavItem,Nav} from 'react-bootstrap';
+import {Navbar, NavItem, Nav} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
-import axios from "axios/index";
+import {connect} from "react-redux";
+import { withRouter } from "react-router-dom";
+import {logoutUser} from "../actions/authActions";
+
 class MovieHeader extends Component {
-    constructor(props){
-        super(props)
-        this.state={movie:null}
 
-    }
-    componentWillReceiveProps(newProps){
-        console.log("requesting movie")
-        if(newProps.movieId!=null){
-            if(newProps.movieId){
-                if(newProps.movieId!=''){
-                    console.log("load movies")
-                    var headers={"Authorization":'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFmYzFkOTZiNDkyOTNmOTk0MDEzZmQwYzUxM2IyZmM5ZWZhMmEyNTgiLCJ1c2VybmFtZSI6IjkxOSIsImlhdCI6MTU1NjA5NTU0N30.b0BJgisVn92ZPXw6-36_pRYMEJHy_jBtV9htjxItSrE'}
-                    axios.get('https://webapiassignment4.herokuapp.com/movies',{'headers':headers})
-                        .then((response)=>{
-                            console.log("movies returned")
-                            this.setState({
-                                movies: response.movies
-                                
-                            });
-                        })
-                        .catch((error)=> {
-                            console.log("failed to get movies")
-                        })
-                            }
-                        }
-        }else{
-            this.setState({
-                movie:null
-            })
-        }
-        
-
-    }
-    componentWillMount(){
-        console.log("header will mount")
+    logout(){
+        this.props.dispatch(logoutUser());
     }
 
-    render(){
-        let title=null;
-        if(this.state.movie){
-            title=this.state.movie.title;
-        }
+    render() {
         return (
-            
             <div>
                 <Navbar>
                     <Navbar.Header>
                         <Navbar.Brand>
-                            The best movie site.
+                            Movie App
                         </Navbar.Brand>
                     </Navbar.Header>
                     <Nav>
-                        <LinkContainer to ="/movielist">
-                            <NavItem eventKey={1}>Movie List</NavItem>
+                        <LinkContainer to="/movielist">
+                            <NavItem eventKey={1} disabled={!this.props.loggedIn}>Movie List </NavItem>
                         </LinkContainer>
-                        <LinkContainer to="/movie">
-                            <NavItem eventKey={2}>Movie Details</NavItem>
+                        <LinkContainer to={'/movie/'+ (this.props.selectedMovie ? this.props.selectedMovie._id : '')}>
+                            <NavItem eventKey={2} disabled={!this.props.loggedIn}>Movie Detail</NavItem>
+                        </LinkContainer>
+                        <LinkContainer to="/signin">
+                            <NavItem eventKey={3}>{this.props.loggedIn ? <button onClick={this.logout.bind(this)}>Logout</button> : 'Login'}</NavItem>
                         </LinkContainer>
                     </Nav>
                 </Navbar>
                 <header className="App-header">
-                    <h1 className="App-title">{this.props.subTitle}</h1>
+                    <h1 className="App-title">{(this.props.selectedMovie ? this.props.selectedMovie.Title : '')}</h1>
                 </header>
             </div>
-        )
+
+        );
     }
 }
-export default MovieHeader;
+
+const mapStateToProps = state => {
+    return {
+        loggedIn: state.auth.loggedIn,
+        username: state.auth.username,
+        selectedMovie: state.movie.selectedMovie,
+    }
+}
+
+export default withRouter(connect(mapStateToProps)(MovieHeader));
