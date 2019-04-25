@@ -1,4 +1,4 @@
-git import React, { Component } from 'react';
+import React, { Component } from 'react';
 import { fetchMovies } from '../actions/movieActions';
 import { setMovie } from '../actions/movieActions';
 import {connect} from "react-redux";
